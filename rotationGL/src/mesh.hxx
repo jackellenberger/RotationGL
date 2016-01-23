@@ -47,6 +47,7 @@ struct Mesh {
     cs237::color3f  lightIntensity;
     cs237::color3f  ambientLight;
     int txtID;
+    cs237::vec3f openEdge;
 
     /** HINT: I have provide these functions that helping load information about the mesh. You 
      * free to change anything to your liking */ 

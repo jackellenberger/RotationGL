@@ -67,7 +67,8 @@ struct View {
     Renderer		*wfRender;	//!< the renderer for wireframe
     Renderer    *fsRender;  //!< the renderer for flat shading
     Renderer    *dlRender;  //!< the renderer for directional / diffuse lighting
-    Renderer		*tRender;	//!< the renderer for texture
+    Renderer    *tRender; //!< the renderer for texture
+    Renderer		*bRender;	//!< the renderer for texture
 
     double _lastStep, _lastFrameTime, startTime;
   // scene info

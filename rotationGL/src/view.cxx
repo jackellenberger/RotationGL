@@ -18,6 +18,16 @@
 #define FAR_Z     500.0f
 #define TIME_STEP 0.001
 
+cs237::color4f boxColors[3] = {cs237::color4f(1.0f,0.0f,0.0f,1.0f),
+                          cs237::color4f(0.0f,1.0f,0.0f,1.0f),
+                          cs237::color4f(0.0f,0.0f,1.0f,1.0f)};
+cs237::vec3f boxEdges[6] = {cs237::vec3f(0.0f,1.0f,0.0f),
+                            cs237::vec3f(0.0f,-1.0f,0.0f),
+                            cs237::vec3f(1.0f,0.0f,0.0f),
+                            cs237::vec3f(-1.0f,0.0f,0.0f),
+                            cs237::vec3f(0.0f,0.0f,1.0f),
+                            cs237::vec3f(0.0f,0.0f,-1.0f)};
+
 /* View initialization.
  */
 View::View (Scene const &scene, GLFWwindow *win)
@@ -103,10 +113,12 @@ void View::InitModelViewMatrix ()
 
 void View::InitRenderers ()
 {
+  /*
     this->wfRender = new WireframeRenderer();
     this->fsRender = new FlatShadingRenderer();
-    this->dlRender = new LightingRenderer();
+    this->dlRender = new LightingRenderer();*/
     this->tRender  = new TexturingRenderer();
+    this->bRender  = new BoxRenderer();
 
 }
 
@@ -117,10 +129,14 @@ void View::Animate ()
     if (dt >= TIME_STEP) {
       this->_lastStep = now;
       for (int i = 0; i < numObjects; i++){
-        if (this->modelScales[i] < 1.0)
+        if (this->modelScales[i] < 1.0){
           this->modelScales[i] = 30.0f;
+          this->meshObjects[1+i].color = boxColors[rand() %3];
+          this->meshObjects[1+i].openEdge = boxEdges[rand() % 6];
+
+        }
         else
-          this->modelScales[i] = (this->modelScales[i] - 5.0f*(dt)) - 0.01*(now - startTime);
+          this->modelScales[i] = (this->modelScales[i] - 5.0f*(dt)) - 0.001*(now - startTime);
       }
 
       switch(this->rotating){
@@ -148,36 +164,22 @@ void View::Render ()
   /* clear the screen */
     glClearColor (0.0f, 0.0f, 0.0f, 1.0f);	// clear the surface
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+  
 
-    Renderer *r;
-    switch (this->mode) {
-      case WIREFRAME:
-        r =  this->wfRender;
-        break;
-      case FLAT_SHADING:
-        r = this->fsRender;
-        break;
-      case LIGHTING:
-        r = this->dlRender;
-        break;      
-      case TEXTURING:
-        r = this->tRender;
-        break;
-      default:
-        r = this->wfRender;
-    }
-    
-    CS237_CHECK( r->Enable (this->projectionMat) );
-
-    /** YOUR CODE HERE **/
-    // for each mesh (object->model->group), call the render function
-    // will this cause meshes to draw over one another? unclear. hope not.
-    for (int i = 1; i < this->meshObjects.size(); i++){
-      r->Render(modelViewMat * cs237::scale(modelScales[i-1]), &(this->meshObjects[i]));
-    }
-    
-    tRender->Enable(this->projectionMat);
+      tRender->Enable(this->projectionMat);
     tRender->Render(this->playerMVM, &(this->meshObjects[0]));
+
+      glEnable( GL_BLEND );
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  bRender->Enable (this->projectionMat);
+  for (int i = 1; i < this->meshObjects.size(); i++){
+    bRender->Render(modelViewMat * cs237::scale(modelScales[i-1]), &(this->meshObjects[i]));
+  }
+    glDisable( GL_BLEND );
+    
+
+
 }
 
 
@@ -194,7 +196,9 @@ std::vector<Mesh> View::createMeshes(Scene const &scene)
       int modelID = thisObject->model; //save this, we need it twice
       thisMesh->model = modelID;
       thisMesh->position = thisObject->pos;
-      thisMesh->color = cs237::color4f(thisObject->color,1.0);
+      thisMesh->color = boxColors[rand() % 3];
+      thisMesh->openEdge = boxEdges[rand() % 6];
+      std::cout<<thisMesh->openEdge<<"\n";
       //load in data from the Model that is referred to by SceneObject->Model
       // first, get the model
       const OBJ::Model* thisModel = scene.Model(modelID);

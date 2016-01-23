@@ -18,6 +18,10 @@
 #  define SHADER_DIR "../shaders/"
 #endif
 
+cs237::vec3f colors[3] = {cs237::vec3f(1.0f,0.0f,0.0f),
+                          cs237::vec3f(0.0f,1.0f,0.0f),
+                          cs237::vec3f(0.0f,0.0f,1.0f)};
+
 //! Load a shader from the file system and compile and link it.  We keep
 //! a cache of shaders that have already been loaded to allow two renderers
 //! to share the same shader program without compiling it twice.
@@ -203,6 +207,45 @@ void TexturingRenderer::Render (cs237::mat4f const &modelViewMat, Mesh *mesh)
   CS237_CHECK( cs237::setUniform (lAmbientLoc, mesh->ambientLight) );
   CS237_CHECK( cs237::setUniform (lIntensityLoc, mesh->lightIntensity) );
   CS237_CHECK( cs237::setUniform (lDiffuseLoc, mesh->diffuse) );
+
+  CS237_CHECK( glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) );
+  CS237_CHECK(glActiveTexture(GL_TEXTURE0));    
+  mesh->texture->Bind();
+  cs237::setUniform(samplerLoc, 0);
+  CS237_CHECK( mesh->Draw() );
+}
+
+/***** class BoxRenderer member functions *****/
+
+BoxRenderer::BoxRenderer()
+{
+    //std::cout<<"BoxRenderer::BoxRenderer\n";
+    CS237_CHECK( this->_shader = LoadShader("../shaders/BoxShader"));
+    
+    CS237_CHECK( this->modelViewLoc = _shader->UniformLocation("modelView") );
+    CS237_CHECK( this->projectionLoc = _shader->UniformLocation("projection") );
+    CS237_CHECK( this->translationLoc = _shader->UniformLocation("translation") );
+    CS237_CHECK( this->colorLoc = _shader->UniformLocation("color") );
+    this->edgeLoc = _shader->UniformLocation("edge");
+    this->samplerLoc = _shader->UniformLocation("sampler"); 
+}
+
+BoxRenderer::~BoxRenderer (){ }
+
+void BoxRenderer::Enable (cs237::mat4f const &projectionMat)
+{
+      //std::cout<<"BoxRenderer::Enable\n";
+    CS237_CHECK( _shader->Use() );
+    CS237_CHECK( cs237::setUniform(projectionLoc,projectionMat) );
+    CS237_CHECK( glEnable(GL_DEPTH_TEST) );
+}
+
+void BoxRenderer::Render (cs237::mat4f const &modelViewMat, Mesh *mesh)
+{
+  cs237::setUniform (translationLoc, mesh->position);
+  cs237::setUniform (modelViewLoc, modelViewMat);
+  cs237::setUniform (colorLoc, mesh->color);
+  cs237::setUniform (edgeLoc, mesh->openEdge);
 
   CS237_CHECK( glPolygonMode(GL_FRONT_AND_BACK, GL_FILL) );
   CS237_CHECK(glActiveTexture(GL_TEXTURE0));    

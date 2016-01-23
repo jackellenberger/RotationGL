@@ -40,6 +40,7 @@ class Renderer {
     GLint lAmbientLoc;
     GLint lIntensityLoc;
     GLint lDiffuseLoc;
+    GLint edgeLoc;
 
     //Renderer (cs237::ShaderProgram *sh);
 
@@ -89,8 +90,16 @@ class TexturingRenderer : public Renderer {
 
     void Enable (cs237::mat4f const &projectionMat);
 
-    /** YOUR CODE HERE **/
     void Render (cs237::mat4f const &modelViewMat, Mesh *mesh);
-    //Renderer (cs237::ShaderProgram *sh);
+};
+
+class BoxRenderer : public Renderer {
+  public:
+    BoxRenderer ();
+    virtual ~BoxRenderer ();
+
+    void Enable (cs237::mat4f const &projectionMat);
+
+    void Render (cs237::mat4f const &modelViewMat, Mesh *mesh);
 };
 #endif // !_RENDER_HXX_
