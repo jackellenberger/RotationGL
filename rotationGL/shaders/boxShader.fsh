@@ -4,6 +4,7 @@ uniform sampler2D sampler;
 uniform vec4 color;
 uniform vec3 edge;
 
+
 in vec2 f_tCoord;
 in vec3 f_normal; 
 

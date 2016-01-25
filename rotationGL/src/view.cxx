@@ -43,6 +43,7 @@ View::View (Scene const &scene, GLFWwindow *win)
     this->isVis		= GL_TRUE;
     this->shouldExit	= false;
     this->needsRedraw	= true;
+    this->gamePlayLoop = true;
 
   /* initialize the camera */
     this->camPos	= scene.CameraPos();
@@ -62,6 +63,7 @@ View::View (Scene const &scene, GLFWwindow *win)
     this->numObjects = scene.NumObjects();
     this->meshObjects = createMeshes(scene);
 
+    modelScales.push_back(1.0f);  //player scale
     for (int i = 1; i < numObjects; i++)
       modelScales.push_back(20.0f * i);
 
@@ -108,6 +110,12 @@ void View::InitModelViewMatrix ()
 
         this->xRotationAxis = cs237::vec4f(1,0,0,0);
         this->yRotationAxis = cs237::vec4f(0,1,0,0);
+
+        // rotate the earth so chicago is pointing at you
+        this->playerMVM = playerMVM 
+          * cs237::rotate(90.0f, cs237::vec3f(yRotationAxis))
+          * cs237::rotate(-45.0f, cs237::vec3f(0,0,1));
+
   }
 
     cs237::mat4f rotation = cs237::mat4f(1)
@@ -138,37 +146,48 @@ void View::Animate ()
     double dt = now - this->_lastStep;
     if (dt >= TIME_STEP) {
       this->_lastStep = now;
-      for (int i = 0; i < numObjects; i++){
-        if (this->modelScales[i] < 1.0){
-          this->modelScales[i] = 30.0f;
-          this->meshObjects[1+i].color = boxColors[rand() %3];
-          this->meshObjects[1+i].openEdge = boxEdges[rand() % 6];
-
+      if (gamePlayLoop){
+        for (int i = 1; i < numObjects; i++){
+          if (this->modelScales[i] < 1.5){
+            cs237::vec3f openFace = cs237::vec3f(this->modelViewMat * cs237::vec4f(this->meshObjects[1+i].openEdge,0));
+            float offAngle = cs237::__detail::dot(openFace,cs237::vec3f(0,0,0.2));
+            if (offAngle < 0.16){
+              std::cout<<"Fail: "<<offAngle<<"\t"<<modelScales[i]<<"\t"<<openFace<<"\n";
+              this->gamePlayLoop = false;
+              return;
+            }
+            else{
+              std::cout<<cs237::__detail::dot(openFace,cs237::vec3f(0,0,-0.2))<<"\n";
+              this->meshObjects[i].color = boxColors[rand() %3];
+              this->meshObjects[i].openEdge = boxEdges[rand() % 6];
+              this->modelScales[i] = 30.0f;
+            }
+          }
+          else
+            this->modelScales[i] = (this->modelScales[i] - 5.0f*(dt)) - 0.001*(now - startTime);
         }
-        else
-          this->modelScales[i] = (this->modelScales[i] - 5.0f*(dt)) - 0.001*(now - startTime);
+
+        switch(this->rotating){
+          case UP:
+            this->modelRotation.x = -100.0f*(dt);
+            break;
+          case DOWN:
+            this->modelRotation.x = 100.0f*(dt);
+            break;
+          case LEFT:
+            this->modelRotation.y = 100.0f*(dt);
+            break;
+          case RIGHT:
+            this->modelRotation.y = -100.0f*(dt);
+            break;
+          case NONE:
+            this->modelRotation.y = this->modelRotation.x = 0.0;
+            //this->MVMinitialized = false;
+          default:
+            break;
+          }
+        this->InitModelViewMatrix();
       }
-
-      switch(this->rotating){
-        case UP:
-          this->modelRotation.x = -100.0f*(dt);
-          break;
-        case DOWN:
-          this->modelRotation.x = 100.0f*(dt);
-          break;
-        case LEFT:
-          this->modelRotation.y = 100.0f*(dt);
-          break;
-        case RIGHT:
-          this->modelRotation.y = -100.0f*(dt);
-          break;
-        case NONE:
-          this->modelRotation.y = this->modelRotation.x = 0.0;
-          //this->MVMinitialized = false;
-        default:
-          break;
-        }
-      this->InitModelViewMatrix();
     }
 }
 
@@ -187,7 +206,7 @@ void View::Render ()
 
   bRender->Enable (this->projectionMat);
   for (int i = 1; i < this->meshObjects.size(); i++){
-    bRender->Render(modelViewMat * cs237::scale(modelScales[i-1]), &(this->meshObjects[i]));
+    bRender->Render(modelViewMat * cs237::scale(modelScales[i]), &(this->meshObjects[i]));
   }
     glDisable( GL_BLEND );
     

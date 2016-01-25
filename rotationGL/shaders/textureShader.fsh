@@ -20,5 +20,8 @@ void main ()
 	float fDotProduct = max(0.0, dot(f_normal, direction));
 	vec3 vDiffuseColor = diffuse * ambient * fDotProduct;
 
-	fragColor = vec4(/*vDiffuseColor +*/ max(0.0,dot(-direction,norm)) * intensity, 1.0) * texture(sampler,f_tCoord);
+	fragColor = vec4(max(0.0,dot(-direction,norm)) * intensity, 1.0) * texture(sampler,f_tCoord);
+
+	if (dot(norm,vec3(0,0,-0.2)) > 0.199)
+		fragColor = vec4(1,0,0,0);
 }

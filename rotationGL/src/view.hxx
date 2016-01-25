@@ -62,6 +62,7 @@ struct View {
     cs237::mat4f	modelViewMat;	//!< the current model-view matrix
     cs237::mat4f  playerMVM; //!< the current model-view matrix
     bool MVMinitialized;
+    bool gamePlayLoop;
     cs237::mat4f	projectionMat;	//!< the current projection matrix
     int			wid, ht;	//!< window dimensions
     bool		isVis;		//!< true, when the window is visible
