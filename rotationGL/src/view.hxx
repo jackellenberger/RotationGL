@@ -54,11 +54,14 @@ struct View {
     float zRot;
     cs237::vec3f modelRotation;
     cs237::vec3f cameraRotation;
+    cs237::vec4f xRotationAxis;
+    cs237::vec4f yRotationAxis;
     RotationDirection rotating;
     std::vector<float> modelScales;
   // view info 
     cs237::mat4f	modelViewMat;	//!< the current model-view matrix
     cs237::mat4f  playerMVM; //!< the current model-view matrix
+    bool MVMinitialized;
     cs237::mat4f	projectionMat;	//!< the current projection matrix
     int			wid, ht;	//!< window dimensions
     bool		isVis;		//!< true, when the window is visible

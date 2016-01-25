@@ -20,6 +20,6 @@ void main ()
 		fragColor.xyz = color.rgb;
 	}
 	if (f_normal != (edge * vec3(-1))){
-		fragColor.xyz = fragColor.xyz + vec3(0.5,0.5,0.5);
+		fragColor.xyz = fragColor.xyz + vec3(0.7,0.7,0.7);
 	}
 }

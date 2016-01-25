@@ -15,6 +15,6 @@ void main ()
 {
    gl_Position = projection * modelView * vec4(translation + position,1.0);
    f_tCoord = tCoord;
-   f_normal = normal;
+   f_normal = (projection * modelView * vec4(normal,0.0)).xyz ;
    
 }

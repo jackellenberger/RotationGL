@@ -35,6 +35,7 @@ View::View (Scene const &scene, GLFWwindow *win)
   // link the window and the view together
     glfwSetWindowUserPointer (win, this);
     this->win = win;
+    this->MVMinitialized = false;
 
   /* view info */
     this->wid		= scene.Width();
@@ -87,28 +88,37 @@ void View::InitProjMatrix ()
  */
 void View::InitModelViewMatrix ()
 {
-
-    //std::cout<<this->camAt;
-    //std::cout<<"\n";
-    /** YOUR CODE HERE **/
-    cs237::mat4f modelViewM = cs237::lookAt (
+  if (this->MVMinitialized == false){
+   cs237::mat4f modelViewM = cs237::lookAt (
       this->camPos,
       this->camAt,
       this->camUp);
     
     // place the player at the center
-    this->playerMVM = modelViewM;
+    this->MVMinitialized = true;
 
-    modelViewM = modelViewM
+        modelViewM = modelViewM
         * cs237::translate(this->camPos)
         * cs237::rotateX(this->cameraRotation.x)
         * cs237::rotateY(this->cameraRotation.y)
         * cs237::rotateZ(this->cameraRotation.z)
         * cs237::translate(this->camPos * -1.0f);
-    modelViewMat = modelViewM
-        * cs237::rotateX(this->modelRotation.x)
-        * cs237::rotateY(this->modelRotation.y)
-        * cs237::rotateZ(this->modelRotation.z);
+
+        this->playerMVM = this->modelViewMat = modelViewM;
+
+        this->xRotationAxis = cs237::vec4f(1,0,0,0);
+        this->yRotationAxis = cs237::vec4f(0,1,0,0);
+  }
+
+    cs237::mat4f rotation = cs237::mat4f(1)
+        * cs237::rotate(modelRotation.x, cs237::vec3f(xRotationAxis))
+        * cs237::rotate(modelRotation.y, cs237::vec3f(yRotationAxis));
+
+    xRotationAxis = xRotationAxis*rotation;
+    yRotationAxis = yRotationAxis*rotation;
+
+    modelViewMat *= rotation;
+        
 }
 
 void View::InitRenderers ()
@@ -141,17 +151,20 @@ void View::Animate ()
 
       switch(this->rotating){
         case UP:
-          this->modelRotation.x += 100.0f*(dt);
+          this->modelRotation.x = -100.0f*(dt);
           break;
         case DOWN:
-          this->modelRotation.x -= 100.0f*(dt);
+          this->modelRotation.x = 100.0f*(dt);
           break;
         case LEFT:
-          this->modelRotation.y += 100.0f*(dt);
+          this->modelRotation.y = 100.0f*(dt);
           break;
         case RIGHT:
-          this->modelRotation.y -= 100.0f*(dt);
+          this->modelRotation.y = -100.0f*(dt);
           break;
+        case NONE:
+          this->modelRotation.y = this->modelRotation.x = 0.0;
+          //this->MVMinitialized = false;
         default:
           break;
         }
