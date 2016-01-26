@@ -7,6 +7,7 @@
 #include "scene.hxx"
 #include "view.hxx"
 
+int gameplay();
 /*! \brief Set the viewport to the current size of the framebufffer.
  *         We use the framebuffer size instead of the window size, because it
  *         is different on Apple's retina displays.
@@ -63,6 +64,10 @@ void Key (GLFWwindow *win, int key, int scancode, int action, int mods)
     case GLFW_KEY_Q:  // quit
       glfwSetWindowShouldClose (win, true);
       break;
+    case GLFW_KEY_R:  //restart
+      glfwSetWindowShouldClose (win, true);
+      gameplay();
+      break;
     case GLFW_KEY_W:  // wireframe mode 
       view->mode = WIREFRAME;
       break;
@@ -75,7 +80,6 @@ void Key (GLFWwindow *win, int key, int scancode, int action, int mods)
     case GLFW_KEY_T: // textured mode
       view->mode = TEXTURING;
       break;
-
     case GLFW_KEY_UP:
       view->rotating = (view->rotating == DOWN ? NONE : UP);
       break;
@@ -97,12 +101,9 @@ void Key (GLFWwindow *win, int key, int scancode, int action, int mods)
 }
 
 
-/*! \brief the main function for the program
- *  \param argc the count of arguments in \a argv
- *  \param argv the array of command-line arguments.
- */
-int main(int argc, const char **argv)
+int gameplay()
 {
+    
   // first we load the scene file
   Scene scene;
   if (scene.Load("../resources/objects")) {
@@ -131,10 +132,10 @@ int main(int argc, const char **argv)
 
   GLFWwindow *window = glfwCreateWindow(scene.Width(), 
                                         scene.Height(),
-	                                      "RotationGL", 
+                                        "RotationGL", 
                                         NULL, NULL);
   if (window == nullptr)
-	 exit (EXIT_FAILURE);
+   exit (EXIT_FAILURE);
 
   // Check the OpenGL version
   {
@@ -173,3 +174,14 @@ int main(int argc, const char **argv)
   glfwTerminate ();
   return EXIT_SUCCESS;  
 }
+
+
+/*! \brief the main function for the program
+ *  \param argc the count of arguments in \a argv
+ *  \param argv the array of command-line arguments.
+ */
+int main(int argc, const char **argv)
+{
+  return gameplay();
+}
+

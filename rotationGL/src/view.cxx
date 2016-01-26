@@ -64,9 +64,10 @@ View::View (Scene const &scene, GLFWwindow *win)
     this->meshObjects = createMeshes(scene);
 
     modelScales.push_back(1.0f);  //player scale
-    for (int i = 1; i < numObjects; i++)
+    for (int i = 1; i < numObjects; i++){
       modelScales.push_back(20.0f * i);
-
+      meshObjects[i].openEdge = boxEdges[rand() % 6];
+    }
     this->_lastStep = this->_lastFrameTime = this->startTime = glfwGetTime();
 }
 
@@ -149,15 +150,15 @@ void View::Animate ()
       if (gamePlayLoop){
         for (int i = 1; i < numObjects; i++){
           if (this->modelScales[i] < 1.5){
-            cs237::vec3f openFace = cs237::vec3f(this->modelViewMat * cs237::vec4f(this->meshObjects[1+i].openEdge,0));
+            cs237::vec3f openFace = cs237::vec3f(this->modelViewMat * cs237::vec4f(this->meshObjects[i].openEdge,0));
             float offAngle = cs237::__detail::dot(openFace,cs237::vec3f(0,0,0.2));
             if (offAngle < 0.16){
               std::cout<<"Fail: "<<offAngle<<"\t"<<modelScales[i]<<"\t"<<openFace<<"\n";
               this->gamePlayLoop = false;
-              return;
+              //return;
             }
             else{
-              std::cout<<cs237::__detail::dot(openFace,cs237::vec3f(0,0,-0.2))<<"\n";
+              std::cout<<"Pass: "<<offAngle<<"\t"<<modelScales[i]<<"\t"<<openFace<<"\n";
               this->meshObjects[i].color = boxColors[rand() %3];
               this->meshObjects[i].openEdge = boxEdges[rand() % 6];
               this->modelScales[i] = 30.0f;
@@ -211,7 +212,6 @@ void View::Render ()
     glDisable( GL_BLEND );
     
 
-
 }
 
 
@@ -230,7 +230,6 @@ std::vector<Mesh> View::createMeshes(Scene const &scene)
       thisMesh->position = thisObject->pos;
       thisMesh->color = boxColors[rand() % 3];
       thisMesh->openEdge = boxEdges[rand() % 6];
-      std::cout<<thisMesh->openEdge<<"\n";
       //load in data from the Model that is referred to by SceneObject->Model
       // first, get the model
       const OBJ::Model* thisModel = scene.Model(modelID);
