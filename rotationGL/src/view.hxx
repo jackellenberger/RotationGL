@@ -58,6 +58,7 @@ struct View {
     cs237::vec4f yRotationAxis;
     RotationDirection rotating;
     std::vector<float> modelScales;
+    bool restart;
   // view info 
     cs237::mat4f	modelViewMat;	//!< the current model-view matrix
     cs237::mat4f  playerMVM; //!< the current model-view matrix

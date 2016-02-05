@@ -44,6 +44,7 @@ View::View (Scene const &scene, GLFWwindow *win)
     this->shouldExit	= false;
     this->needsRedraw	= true;
     this->gamePlayLoop = true;
+    this->restart = true;
 
   /* initialize the camera */
     this->camPos	= scene.CameraPos();
@@ -91,6 +92,16 @@ void View::InitProjMatrix ()
  */
 void View::InitModelViewMatrix ()
 {
+  if (restart) {
+    restart = false;
+    this->MVMinitialized = false;
+    this->modelRotation = cs237::vec3f(0);
+    modelScales[0] = 1.0f;  //player scale
+    for (int i = 1; i < numObjects; i++){
+      modelScales[i] = (20.0f * i);
+      meshObjects[i].openEdge = boxEdges[rand() % 6];
+    }
+  }
   if (this->MVMinitialized == false){
    cs237::mat4f modelViewM = cs237::lookAt (
       this->camPos,
@@ -132,13 +143,8 @@ void View::InitModelViewMatrix ()
 
 void View::InitRenderers ()
 {
-  /*
-    this->wfRender = new WireframeRenderer();
-    this->fsRender = new FlatShadingRenderer();
-    this->dlRender = new LightingRenderer();*/
-    this->tRender  = new TexturingRenderer();
-    this->bRender  = new BoxRenderer();
-
+  this->tRender  = new TexturingRenderer();
+  this->bRender  = new BoxRenderer();
 }
 
 void View::Animate ()
@@ -183,7 +189,6 @@ void View::Animate ()
             break;
           case NONE:
             this->modelRotation.y = this->modelRotation.x = 0.0;
-            //this->MVMinitialized = false;
           default:
             break;
           }
@@ -199,7 +204,7 @@ void View::Render ()
     glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
   
 
-      tRender->Enable(this->projectionMat);
+    tRender->Enable(this->projectionMat);
     tRender->Render(this->playerMVM, &(this->meshObjects[0]));
 
       glEnable( GL_BLEND );

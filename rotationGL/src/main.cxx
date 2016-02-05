@@ -7,7 +7,6 @@
 #include "scene.hxx"
 #include "view.hxx"
 
-int gameplay();
 /*! \brief Set the viewport to the current size of the framebufffer.
  *         We use the framebuffer size instead of the window size, because it
  *         is different on Apple's retina displays.
@@ -65,8 +64,8 @@ void Key (GLFWwindow *win, int key, int scancode, int action, int mods)
       glfwSetWindowShouldClose (win, true);
       break;
     case GLFW_KEY_R:  //restart
-      glfwSetWindowShouldClose (win, true);
-      gameplay();
+      view->restart = true;
+      view->gamePlayLoop = true;
       break;
     case GLFW_KEY_W:  // wireframe mode 
       view->mode = WIREFRAME;
@@ -101,9 +100,8 @@ void Key (GLFWwindow *win, int key, int scancode, int action, int mods)
 }
 
 
-int gameplay()
+int main(int argc, const char **argv)
 {
-    
   // first we load the scene file
   Scene scene;
   if (scene.Load("../resources/objects")) {
@@ -173,15 +171,5 @@ int gameplay()
   }
   glfwTerminate ();
   return EXIT_SUCCESS;  
-}
-
-
-/*! \brief the main function for the program
- *  \param argc the count of arguments in \a argv
- *  \param argv the array of command-line arguments.
- */
-int main(int argc, const char **argv)
-{
-  return gameplay();
 }
 
