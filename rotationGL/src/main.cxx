@@ -18,7 +18,6 @@ static void SetViewport (GLFWwindow *win)
   glViewport(0, 0 , fbWid, fbHt);
 }
 
-
 static void Error (int err, const char *msg)
 {
   std::cerr << "[GLFW ERROR " << err << "] " << msg << std::endl;
@@ -66,18 +65,6 @@ void Key (GLFWwindow *win, int key, int scancode, int action, int mods)
     case GLFW_KEY_R:  //restart
       view->restart = true;
       view->gamePlayLoop = true;
-      break;
-    case GLFW_KEY_W:  // wireframe mode 
-      view->mode = WIREFRAME;
-      break;
-    case GLFW_KEY_F:  // flat shading mode
-      view->mode = FLAT_SHADING;
-      break;
-    case GLFW_KEY_D: // diffuse lighting mode
-      view->mode = LIGHTING;
-      break;
-    case GLFW_KEY_T: // textured mode
-      view->mode = TEXTURING;
       break;
     case GLFW_KEY_UP:
       view->rotating = (view->rotating == DOWN ? NONE : UP);
@@ -133,7 +120,7 @@ int main(int argc, const char **argv)
                                         "RotationGL", 
                                         NULL, NULL);
   if (window == nullptr)
-   exit (EXIT_FAILURE);
+    exit (EXIT_FAILURE);
 
   // Check the OpenGL version
   {
@@ -169,6 +156,7 @@ int main(int argc, const char **argv)
     //usleep(100);
     glfwPollEvents();
   }
+  
   glfwTerminate ();
   return EXIT_SUCCESS;  
 }

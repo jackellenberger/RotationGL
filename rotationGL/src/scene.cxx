@@ -1,15 +1,4 @@
-/*! \file scene.cxx
- *
- * Code to load a scene description.
- *
- * \author John Reppy
- */
-
-/* CMSC23700 Project 2 sample code (Autumn 2015)
- *
- * COPYRIGHT (c) 2015 John Reppy (http://www.cs.uchicago.edu/~jhr)
- * All rights reserved.
- */
+// Written by Prof John Reppy for use in projects 1-3
 
 #include "json.hxx"
 #include "scene.hxx"

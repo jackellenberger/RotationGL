@@ -1,23 +1,17 @@
-/*! \file mesh.cxx
- *
- * \author YOUR_NAME
- */
-
 #include "mesh.hxx"
 
 /*! The locations of the standard mesh attributes.  The layout directives in the shaders
  * should match these values.
  */
-const GLint CoordAttrLoc = 0; //!< location of vertex coordinates attribute
-const GLint NormAttrLoc = 1;  //!< location of vertex normal attribute
-const GLint TexCoordAttrLoc = 2;  //!< location of texture coordniate attribute
+const GLint CoordAttrLoc = 0; // location of vertex coordinates attribute
+const GLint NormAttrLoc = 1;  // location of vertex normal attribute
+const GLint TexCoordAttrLoc = 2;  // location of texture coordniate attribute
 
 //! create a MeshInfo object by initializing its buffer Ids.  The buffer data is
 //! loaded separately.
 Mesh::Mesh(GLenum p)
 {
     //std::cout<<"Mesh::Mesh\n";
-    /** YOUR CODE HERE **/
     this->prim = p;
     this->vaoId = 0;
     this->vbufId = 0;
@@ -30,8 +24,6 @@ Mesh::Mesh(GLenum p)
 
 void Mesh::LoadTexCoords (int nCoords, cs237::vec2f *tcoords)
 {
-    //std::cout<<"Mesh::LoadTexCoords\n";
-
     GLuint id;
 
     //gen buffer ids
@@ -52,8 +44,6 @@ void Mesh::LoadTexCoords (int nCoords, cs237::vec2f *tcoords)
 
 void Mesh::LoadNormals (int nVerts, cs237::vec3f *norms)
 {
-    //std::cout<<"Mesh::LoadNormals\n";
-
     GLuint id;
 
     //gen buffer ids
@@ -75,9 +65,6 @@ void Mesh::LoadNormals (int nVerts, cs237::vec3f *norms)
 //! initialize the vertex data buffers for the mesh
 void Mesh::LoadVertices (int nVerts, const cs237::vec3f *verts)
 {
-    //std::cout<<"Mesh::LoadVertices\n";
-
-    /** YOUR CODE HERE **/
     GLuint id;
 
     //gen buffer ids
@@ -99,9 +86,6 @@ void Mesh::LoadVertices (int nVerts, const cs237::vec3f *verts)
 //! initialize the element array for the mesh
 void Mesh::LoadIndices (int n, const uint32_t *indices)
 {
-    //std::cout<<"Mesh::LoadIndices\n";
-
-    /** YOUR CODE HERE **/
     this->nIndices = n;
 
     CS237_CHECK( glBindVertexArray (this->vaoId) );
@@ -116,8 +100,6 @@ void Mesh::LoadIndices (int n, const uint32_t *indices)
 
 void Mesh::Draw ()
 {
-    //std::cout<<"Mesh::Draw\n";
-    /** YOUR CODE HERE **/
     //bind to vao
     CS237_CHECK( glBindVertexArray(this->vaoId) );
 

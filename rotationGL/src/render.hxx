@@ -1,14 +1,3 @@
-/*! \file render.hxx
- *
- * \author John Reppy
- */
-
-/* CMSC23700 Project 1 sample code (Autumn 2014)
- *
- * COPYRIGHT (c) 2015 John Reppy (http://www.cs.uchicago.edu/~jhr)
- * All rights reserved.
- */
-
 #ifndef _RENDER_HXX_
 #define _RENDER_HXX_
 
@@ -22,15 +11,16 @@ class Renderer {
 
   //! enable the renderer
   //! \param projectMat the projection matrix for the current camera state
-    virtual void Enable (cs237::mat4f const &projectionMat) = 0;
+  virtual void Enable (cs237::mat4f const &projectionMat) = 0;
 
-    virtual ~Renderer ();
-    virtual void Render (cs237::mat4f const &modelViewMat, Mesh *mesh) = 0;
+  virtual ~Renderer ();
+  virtual void Render (cs237::mat4f const &modelViewMat, Mesh *mesh) = 0;
 
   protected:
-    cs237::ShaderProgram	*_shader;	//!< the shader program
+    // our shader program
+    cs237::ShaderProgram	*_shader;
 
-    /** YOUR CODE HERE **/
+    // we save the location of our uniforms into these variables
     GLint modelViewLoc;
     GLint projectionLoc;
     GLint colorLoc;
@@ -40,47 +30,7 @@ class Renderer {
     GLint lAmbientLoc;
     GLint lIntensityLoc;
     GLint lDiffuseLoc;
-    GLint edgeLoc;
-
-    //Renderer (cs237::ShaderProgram *sh);
-
-
-};
-
-class WireframeRenderer : public Renderer {
-  public:
-    WireframeRenderer ();
-    virtual ~WireframeRenderer ();
-
-    void Enable (cs237::mat4f const &projectionMat);
-
-    /** YOUR CODE HERE **/
-    void Render (cs237::mat4f const &modelViewMat, Mesh *mesh);
-    //Renderer (cs237::ShaderProgram *sh);
-};
-
-class FlatShadingRenderer : public Renderer {
-  public:
-    FlatShadingRenderer ();
-    virtual ~FlatShadingRenderer ();
-
-    void Enable (cs237::mat4f const &projectionMat);
-
-    /** YOUR CODE HERE **/
-    void Render (cs237::mat4f const &modelViewMat, Mesh *mesh);
-    //Renderer (cs237::ShaderProgram *sh);
-};
-
-class LightingRenderer : public Renderer {
-  public:
-    LightingRenderer ();
-    virtual ~LightingRenderer ();
-
-    void Enable (cs237::mat4f const &projectionMat);
-
-    /** YOUR CODE HERE **/
-    void Render (cs237::mat4f const &modelViewMat, Mesh *mesh);
-    //Renderer (cs237::ShaderProgram *sh);
+    GLint openFaceLoc;
 };
 
 class TexturingRenderer : public Renderer {
@@ -89,7 +39,6 @@ class TexturingRenderer : public Renderer {
     virtual ~TexturingRenderer ();
 
     void Enable (cs237::mat4f const &projectionMat);
-
     void Render (cs237::mat4f const &modelViewMat, Mesh *mesh);
 };
 
@@ -99,7 +48,7 @@ class BoxRenderer : public Renderer {
     virtual ~BoxRenderer ();
 
     void Enable (cs237::mat4f const &projectionMat);
-
     void Render (cs237::mat4f const &modelViewMat, Mesh *mesh);
 };
+
 #endif // !_RENDER_HXX_
